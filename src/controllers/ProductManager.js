@@ -62,8 +62,8 @@ export default class ProductManager {
 };
 
     addProduct = async (obj) => {
-        const {title, detail, price, image, code, stock, status=true}=obj
-        if (!title || !detail || !price || !image || !code || !stock ||!status) {
+        const {title, detail, price, image, code, stock, id}=obj
+        if (!title || !detail || !price || !image || !code || !stock ||!id) {
             console.error("INGRESE TODOS LOS DATOS DEL PRODUCTO");
             return;
         } else {
@@ -83,7 +83,7 @@ export default class ProductManager {
             image,
             code,
             stock,
-            status,
+            id,
         };
             listadoProductos.push(productnew);
             await fs.promises.writeFile(this.path,
@@ -95,8 +95,8 @@ export default class ProductManager {
 
     updateProduct = async (id,obj) => {
         const {pid}=id
-        const {title, detail, price, image, code, stock, status}=obj
-        if(title===undefined || detail===undefined || price===undefined || image===undefined || code===undefined||stock===undefined || status===undefined){
+        const {title, detail, price, image, code, stock, id}=obj
+        if(title===undefined || detail===undefined || price===undefined || image===undefined || code===undefined||stock===undefined || id===undefined){
             console.error("INGRESE TODOS LOS DATOS DEL PRODUCTO PARA SU ACTUALIZACION");
                 return;
         } else {
@@ -119,7 +119,7 @@ export default class ProductManager {
             image,
             code,
             stock,
-            status,
+            id,
         };
             return updatedProduct;
         } else {
