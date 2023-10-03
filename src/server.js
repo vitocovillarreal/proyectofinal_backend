@@ -55,7 +55,7 @@ const messagesManager = new MessagesManager();
     socket.broadcast.emit("broadcast",usuario)
     })
     socket.on("disconnect",()=>{
-        console.log(`Usuario con ID : ${socket.id} esta desconectado `)
+        console.log(`Usuario con ID : ${socket.id} está desconectado `)
     })
 
     socket.on("mensaje", async (info) => {

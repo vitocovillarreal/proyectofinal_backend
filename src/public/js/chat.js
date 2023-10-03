@@ -8,7 +8,7 @@ let usuario=null
 
 if(!usuario){
     Swal.fire({
-    title:"Welcome to my English Class",
+    title:"Welcome to The Book Store",
     text:"Ingresa tu usuario",
     input:"text",
     inputValidator:(value)=>{

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const productCollection="products"
+const productsCollection="products"
 const productSchema= new mongoose.Schema({
     title: {
         type: String,
@@ -34,4 +34,4 @@ const productSchema= new mongoose.Schema({
     },
 })
 
-export const productsModel= mongoose.model(productCollection,productSchema)
+export const productsModel= mongoose.model(productsCollection,productSchema)
