@@ -1,24 +1,24 @@
-const socketCliente = io();
-socketCliente.on("productos", (products) => {
-console.log(products);
-updateProductList(products);
-});
+const socketClient=io()
+
+socketClient.on("enviodeproducts",(obj)=>{
+updateProductList(obj)
+})
 
 function updateProductList(products) {
 let div = document.getElementById("list-products");
 let productos = "";
-
+  
 products.forEach((product) => {
 productos += `
 <article class="container">
     <div class="card">
         <div class="imgBx">
-            <img src="${product.thumbnail}" width="150" />
+            <img src="${product.image}" width="150" />
         </div>
         <div class="contentBx">
             <h2>${product.title}</h2>
             <div class="size">
-            <h3>${product.description}</h3>
+            <h3>${product.detail}</h3>
             <span>7</span>
             <span>8</span>
             <span>9</span>
