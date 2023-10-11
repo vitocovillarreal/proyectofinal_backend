@@ -1,13 +1,10 @@
 import {cartModel} from "../models/carts.model.js"
-import ProductManager from "../mongomanagers/productManagerMongo.js"
-
-const pm = new ProductManager()
 
 class CartManager {
 
     getCarts = async () => {
         try {
-            const carts = await cartModel.find();
+            const carts = await cartModel.find().lean();
             return carts;
         } catch (err) {
             console.error('Error al obtener los carritos:', err.message);
@@ -17,14 +14,14 @@ class CartManager {
     
     getCartById = async (cartId) => {
         try {
-            const cart = await cartModel.findById(cartId);
+            const cart = await cartModel.findById(cartId)
             return cart;
         } catch (err) {
             console.error('Error al obtener el carrito por ID:', err.message);
             return err;
         }
     };
-
+    
     addCart = async (products) => {
         try {
             let cartData = {};
@@ -38,7 +35,6 @@ class CartManager {
             return err;
         }
     };
-    
 
     addProductInCart = async (cid, obj) => {
         try {
@@ -49,7 +45,7 @@ class CartManager {
             if (findProduct) {
                 const update = { $inc: { "products.$.quantity": obj.quantity } };
                 await cartModel.updateOne(filter, update);
-            }else{
+            } else {
                 const update = { $push: { products: { _id: obj._id, quantity: obj.quantity } } };
                 await cartModel.updateOne({ _id: cid }, update);
             }
@@ -60,6 +56,25 @@ class CartManager {
             return err;
         }
     };
+
+    deleteProductInCart = async (cid, products) => {
+        try {
+            return await cartModel.findOneAndUpdate(
+                { _id: cid },
+                { products },
+                { new: true })
+        } catch (err) {
+            return err
+        }
+
+    }
+
+    updateOneProduct = async (cid, products) => {
+        await cartModel.updateOne(
+            { _id: cid },
+            {products})
+        return await cartModel.findOne({ _id: cid })
+    }
 };
 
 export default CartManager;
