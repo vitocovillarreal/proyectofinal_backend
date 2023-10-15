@@ -1,66 +1,42 @@
-import express from "express"
-import viewRouter from "./routes/view.router.js"
-import productRouter from "./routes/products.router.js"
-import cartRouter from "./routes/carts.router.js"
+import express from 'express';
+import handlebars from 'express-handlebars';
+import { Server } from 'socket.io';
+import connectToDB from "./config/configServer.js"
 import {__dirname} from "./utils.js"
-import handlebars from "express-handlebars"
-import {Server} from "socket.io"
-import "./dao/dbConfig.js"
+import routerP from './routers/products.router.js';
+import routerC from './routers/carts.router.js';
+import routerV from './routers/views.router.js';
+import socketProducts from "./listeners/socketProducts.js"
+import socketChat from './listeners/socketChat.js';
 
-const app=express()
-const PORT=process.env.PORT||8080;
+const app = express();
+const PORT = process.env.PORT || 8080
+app.use(express.static(__dirname+"/public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-app.use(express.static(__dirname+"/public"))
 app.engine("handlebars",handlebars.engine())
 app.set('view engine', 'handlebars');
 app.set("views",__dirname+"/views")
-app.use("/api",productRouter)
-app.use("/api",cartRouter)
-app.use("/",viewRouter)
 
-const httpServer=app.listen(PORT,()=>{
-    console.log("server is working")
-})
+app.use('/api/products', routerP)
+app.use('/api/carts', routerC)
+app.use('/', routerV);
 
-const socketServer= new Server(httpServer)
+connectToDB()
 
-import ProductManager from "./dao/mongomanagers/productManagerMongo.js"
-const pmanagersocket=new ProductManager()
+const httpServer = app.listen(PORT, () => {
+    try {
+        console.log(`Listening to the port ${PORT}\nAcceder a:`);
+        console.log(`\t1). http://localhost:${PORT}/api/products`)
+        console.log(`\t2). http://localhost:${PORT}/api/carts`);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
 
-import MessagesManager from "./dao/mongomanagers/messageManagerMongo.js"
-const messagesManager = new MessagesManager();
+const socketServer = new Server(httpServer)
 
-    socketServer.on("connection",async(socket)=>{
-        console.log("client connected con ID:",socket.id)
-    const listadeproductos=await pmanagersocket.getProducts()
-    socketServer.emit("enviodeproducts",listadeproductos)
-
-    socket.on("addProduct",async(obj)=>{
-    await pmanagersocket.addProduct(obj)
-    const listadeproductos=await pmanagersocket.getProducts()
-    socketServer.emit("enviodeproducts",listadeproductos)
-    })
-
-    socket.on("deleteProduct",async(id)=>{
-        console.log(id)
-    await pmanagersocket.deleteProduct(id)
-    const listadeproductos=await pmanagersocket.getProducts({})
-    socketServer.emit("enviodeproducts",listadeproductos)
-    })
-
-    socket.on("nuevousuario",(usuario)=>{
-        console.log("usuario" ,usuario)
-    socket.broadcast.emit("broadcast",usuario)
-    })
-    socket.on("disconnect",()=>{
-        console.log(`Usuario con ID : ${socket.id} está desconectado `)
-    })
-
-    socket.on("mensaje", async (info) => {
-        console.log(info)
-    await messagesManager.createMessage(info);
-    socketServer.emit("chat", await messagesManager.getMessages());
-    });
-})
+socketProducts(socketServer)
+socketChat(socketServer)
