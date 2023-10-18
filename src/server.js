@@ -3,9 +3,9 @@ import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import connectToDB from "./config/configServer.js"
 import {__dirname} from "./utils.js"
-import routerP from './routers/products.router.js';
-import routerC from './routers/carts.router.js';
-import routerV from './routers/views.router.js';
+import routerP from './routes/products.router.js';
+import routerC from './routes/carts.router.js';
+import routerV from './routes/views.router.js';
 import socketProducts from "./listeners/socketProducts.js"
 import socketChat from './listeners/socketChat.js';
 
